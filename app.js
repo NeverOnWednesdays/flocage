@@ -27,7 +27,7 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/sc', scRouter);
 
-app.listen(1337)
+app.listen(1338)
 
 global.udpPort;
 global.nodeId = 100;
