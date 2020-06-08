@@ -1,5 +1,5 @@
 // Define an Infusion component that represents your instrument.
-fluid.defaults("myStuff.sinewaver", {
+fluid.defaults("flocage.sinewaver", {
     gradeNames: ["flock.synth"],
 
     // Define the synthDef for your instrument.
@@ -13,7 +13,7 @@ fluid.defaults("myStuff.sinewaver", {
 
 
 // Define an Infusion component that represents your composition.
-fluid.defaults("myStuff.composition", {
+fluid.defaults("flocage.composition", {
     gradeNames: ["fluid.component"],
 
     // This composition has two components:
@@ -25,7 +25,7 @@ fluid.defaults("myStuff.composition", {
         },
 
         instrument: {
-            type: "myStuff.sinewaver"
+            type: "flocage.sinewaver"
         }
     },
 
@@ -38,3 +38,32 @@ fluid.defaults("myStuff.composition", {
         }
     }
 });
+
+class BoutonFlocage {
+
+    constructor() {
+        this.status = "nouveau";
+        this.sinewaver = null;
+    }
+
+    basculer() {
+        switch (this.status) {
+            case "nouveau":
+                this.sinewaver = flocage.sinewaver();
+                this.sinewaver.play();
+                this.status = "joue";
+                break;
+            case "joue":
+                this.sinewaver.pause();
+                this.status = "pause";
+                break;
+            case "pause":
+                this.sinewaver.play();
+                this.status = "joue";
+                break;
+        }
+    }
+
+};
+
+window.BoutonFlocage = new BoutonFlocage();
