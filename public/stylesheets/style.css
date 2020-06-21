@@ -6,3 +6,25 @@ body {
 a {
   color: #00B7FF;
 }
+
+.grid-container {
+
+	display : grid;
+	grid-template-columns: 20pt 20pt 20pt 20pt;
+	grid-template-rows: 20pt 20pt 20pt 20pt; 
+	column-gap: 10px;
+	row-gap: 10px;
+
+}
+
+.grid-item {
+	background-color:orange;
+
+}
+
+.container {
+	width: 100pt;
+	height: 80pt;
+	background-color: red;
+
+}

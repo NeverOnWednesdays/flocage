@@ -49,6 +49,7 @@ class BoutonFlocage {
     basculer() {
         switch (this.status) {
             case "nouveau":
+		document.body.webkitRequestFullscreen();
                 this.sinewaver = flocage.sinewaver();
                 this.sinewaver.play();
                 this.status = "joue";
@@ -64,6 +65,17 @@ class BoutonFlocage {
         }
     }
 
+    moduler(event) {
+	if (event.clientX) {
+    		console.log(event.clientX);
+	}
+	else if (event.touches) {
+		console.log(event.touches[0].clientX);
+	}
+    }
+
 };
 
-window.BoutonFlocage = new BoutonFlocage();
+window.addEventListener("DOMContentLoaded", (event) => {
+	window.BoutonFlocage = new BoutonFlocage();
+});

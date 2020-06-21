@@ -8,6 +8,7 @@ var cookieSession = require('cookie-session');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var scRouter = require('./routes/sc');
+var gridRouter = require('./routes/grid');
 
 
 var app = express();
@@ -26,6 +27,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/sc', scRouter);
+app.use('/grid', gridRouter);
 
 app.listen(1338)
 
