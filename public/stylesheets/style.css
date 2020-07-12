@@ -23,8 +23,8 @@ a {
 }
 
 .container {
-	width: 100pt;
-	height: 80pt;
+	width: 100%;
+	height: 80%;
 	background-color: red;
 
 }
