@@ -44,6 +44,7 @@ class BoutonFlocage {
     constructor() {
         this.status = "nouveau";
         this.sinewaver = null;
+        this.teinte = false;
     }
 
     basculer() {
@@ -67,10 +68,23 @@ class BoutonFlocage {
 
     moduler(event) {
 	if (event.clientX) {
-    		console.log(event.clientX);
+        // normalize position to max brightness 
+        var normalized_touch = event.clientX / screen.width;
+		console.log(normalized_touch);
+        if (this.teinte) {
+            fetch("http://127.0.0.1:5000/bri?luminosite=" + Math.floor(normalized_touch*255).toString());
+        }
+        this.sinewaver.set("carrier.freq", normalized_touch*800);
 	}
 	else if (event.touches) {
-		console.log(event.touches[0].clientX);
+        var normalized_touch = event.touches[0].clientX / screen.width;
+		console.log(normalized_touch);
+        console.log(event.touches.length);
+        console.log("touch")
+         if (this.teinte) {
+            fetch("http://127.0.0.1:5000/bri?luminosite=" + Math.floor(normalized_touch*255).toString());
+        }
+        this.sinewaver.set("carrier.freq", Math.floor(normalized_touch*800));
 	}
     }
 
