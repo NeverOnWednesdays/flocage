@@ -6,7 +6,8 @@
 
 var app = require('../app');
 var debug = require('debug')('www:server');
-var http = require('http');
+var https = require('https');
+const fs = require('fs');
 
 /**
  * Get port from environment and store in Express.
@@ -18,8 +19,18 @@ app.set('port', port);
 /**
  * Create HTTP server.
  */
+const privateKey = fs.readFileSync('/home/svieg/flocage/certs/privkey.pem', 'utf8');
+const certificate = fs.readFileSync('/home/svieg/flocage/certs/cert.pem', 'utf8');
+const ca = fs.readFileSync('/home/svieg/flocage/certs/chain.pem', 'utf8');
 
-var server = http.createServer(app);
+const credentials = {
+		key: privateKey,
+		cert: certificate,
+		ca: ca
+};
+
+
+var server = https.createServer(credentials, app);
 
 /**
  * Listen on provided port, on all network interfaces.
