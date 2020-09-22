@@ -5,7 +5,7 @@ fluid.defaults("flocage.sinewaver", {
     // Define the synthDef for your instrument.
     synthDef: {
         id: "carrier",
-        ugen: "flock.ugen.sin",
+        ugen: "flock.ugen.audioIn",
         freq: 220,
         mul: 0.5
     }
@@ -50,7 +50,7 @@ class BoutonFlocage {
     basculer() {
         switch (this.status) {
             case "nouveau":
-		document.body.webkitRequestFullscreen();
+		        document.body.webkitRequestFullscreen();
                 this.sinewaver = flocage.sinewaver();
                 this.sinewaver.play();
                 this.status = "joue";
@@ -67,25 +67,24 @@ class BoutonFlocage {
     }
 
     moduler(event) {
-	if (event.clientX) {
-        // normalize position to max brightness 
-        var normalized_touch = event.clientX / screen.width;
-		console.log(normalized_touch);
-        if (this.teinte) {
-            fetch("http://127.0.0.1:5000/bri?luminosite=" + Math.floor(normalized_touch*255).toString());
+        // Desktop version
+	    if (event.clientX) {
+            // normalize position to max brightness 
+            var normalized_touch = event.clientX / screen.width;
+            if (this.teinte) {
+                fetch("http://127.0.0.1:5000/bri?luminosite=" + Math.floor(normalized_touch*255).toString());
+            }
+            this.sinewaver.set("carrier.freq", normalized_touch*800);
         }
-        this.sinewaver.set("carrier.freq", normalized_touch*800);
-	}
-	else if (event.touches) {
-        var normalized_touch = event.touches[0].clientX / screen.width;
-		console.log(normalized_touch);
-        console.log(event.touches.length);
-        console.log("touch")
-         if (this.teinte) {
-            fetch("http://127.0.0.1:5000/bri?luminosite=" + Math.floor(normalized_touch*255).toString());
-        }
-        this.sinewaver.set("carrier.freq", Math.floor(normalized_touch*800));
-	}
+        // Mobile version
+	    else if (event.touches) {
+            var normalized_touch = event.touches[0].clientX / screen.width;
+		    console.log(normalized_touch);
+            if (this.teinte) {
+                fetch("http://127.0.0.1:5000/bri?luminosite=" + Math.floor(normalized_touch*255).toString());
+            }
+            this.sinewaver.set("carrier.freq", Math.floor(normalized_touch*800));
+	    }
     }
 
 };
