@@ -13,15 +13,15 @@ const fs = require('fs');
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '3000');
+var port = normalizePort(process.env.PORT || '3001');
 app.set('port', port);
 
 /**
  * Create HTTP server.
  */
-const privateKey = fs.readFileSync('/home/svieg/flocage/certs/privkey.pem', 'utf8');
-const certificate = fs.readFileSync('/home/svieg/flocage/certs/cert.pem', 'utf8');
-const ca = fs.readFileSync('/home/svieg/flocage/certs/chain.pem', 'utf8');
+const privateKey = fs.readFileSync('/home/hervefc/flocage/certs/privkey.pem', 'utf8');
+const certificate = fs.readFileSync('/home/hervefc/flocage/certs/cert.pem', 'utf8');
+const ca = fs.readFileSync('/home/hervefc/flocage/certs/chain.pem', 'utf8');
 
 const credentials = {
 		key: privateKey,
