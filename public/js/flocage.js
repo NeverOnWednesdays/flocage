@@ -42,8 +42,8 @@ fluid.defaults("flocage.composition", {
 var geoSuccess = function(position) {
   window.BoutonFlocage.setPosition(position);
   window.BoutonFlocage.modulerFrequence(position);
-  console.log(startPos.coords.latitude);
-  console.log(startPos.coords.longitude);
+  console.log(position.coords.latitude);
+  console.log(position.coords.longitude);
 };
 var geoError = function(error) {
   switch(error.code) {
@@ -64,13 +64,10 @@ class BoutonFlocage {
     basculer() {
         switch (this.status) {
             case "nouveau":
-		            document.body.webkitRequestFullscreen();
+                document.body.webkitRequestFullscreen();
                 this.sinewaver = flocage.sinewaver();
                 this.sinewaver.play();
                 this.status = "joue";
-                if (geoSuccess) {
-                  console.log("geoSuc");
-                }
                 navigator.geolocation.watchPosition(geoSuccess, geoError);
                 break;
             case "joue":
