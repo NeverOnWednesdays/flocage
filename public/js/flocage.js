@@ -5,7 +5,7 @@ fluid.defaults("flocage.sinewaver", {
     // Define the synthDef for your instrument.
     synthDef: {
         id: "carrier",
-        ugen: "flock.ugen.audioIn",
+        ugen: "flock.ugen.sinOsc",
         freq: 220,
         mul: 0.5
     }
@@ -39,21 +39,39 @@ fluid.defaults("flocage.composition", {
     }
 });
 
+var geoSuccess = function(position) {
+  window.BoutonFlocage.setPosition(position);
+  window.BoutonFlocage.modulerFrequence(position);
+  console.log(startPos.coords.latitude);
+  console.log(startPos.coords.longitude);
+};
+var geoError = function(error) {
+  switch(error.code) {
+    case error.TIMEOUT:
+      break;
+  }
+};
+
 class BoutonFlocage {
 
     constructor() {
         this.status = "nouveau";
         this.sinewaver = null;
         this.teinte = false;
+        this.position = null;
     }
 
     basculer() {
         switch (this.status) {
             case "nouveau":
-		        document.body.webkitRequestFullscreen();
+		            document.body.webkitRequestFullscreen();
                 this.sinewaver = flocage.sinewaver();
                 this.sinewaver.play();
                 this.status = "joue";
+                if (geoSuccess) {
+                  console.log("geoSuc");
+                }
+                navigator.geolocation.watchPosition(geoSuccess, geoError);
                 break;
             case "joue":
                 this.sinewaver.pause();
@@ -66,6 +84,15 @@ class BoutonFlocage {
         }
     }
 
+    setPosition(position) {
+      this.position = position;
+    }
+
+    modulerFrequence(position) {
+      this.sinewaver.set("carrier.freq", position.coords.latitude*10);
+    }
+
+    /*
     moduler(event) {
         // Desktop version
 	    if (event.clientX) {
@@ -86,9 +113,10 @@ class BoutonFlocage {
             this.sinewaver.set("carrier.freq", Math.floor(normalized_touch*800));
 	    }
     }
-
+ */
 };
 
 window.addEventListener("DOMContentLoaded", (event) => {
 	window.BoutonFlocage = new BoutonFlocage();
 });
+
