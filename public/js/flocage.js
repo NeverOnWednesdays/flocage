@@ -43,7 +43,11 @@ var geoSuccess = function(position) {
   window.BoutonFlocage.setPosition(position);
   window.BoutonFlocage.modulerFrequence(position);
   console.log(position.coords.latitude);
+  var latitude_element = document.getElementById('latitude');
+  latitude_element.innerHTML = position.coords.latitude.toString();
   console.log(position.coords.longitude);
+  var longitude_element = document.getElementById('longitude');
+  longitude_element.innerHTML = position.coords.longitude.toString();
 };
 var geoError = function(error) {
   switch(error.code) {
@@ -64,7 +68,7 @@ class BoutonFlocage {
     basculer() {
         switch (this.status) {
             case "nouveau":
-                document.body.webkitRequestFullscreen();
+                //document.body.webkitRequestFullscreen();
                 this.sinewaver = flocage.sinewaver();
                 this.sinewaver.play();
                 this.status = "joue";
