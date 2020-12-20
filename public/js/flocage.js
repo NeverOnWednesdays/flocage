@@ -4,6 +4,7 @@ fluid.defaults("flocage.sinewaver", {
 
     // Define the synthDef for your instrument.
     synthDef: {
+        id: "carrier",
         ugen: "flock.ugen.filter.moog",
         cutoff: {
             ugen: "flock.ugen.sinOsc",
@@ -112,7 +113,8 @@ class BoutonFlocage {
     }
 
     modulerFrequence(position) {
-      this.sinewaver.set("carrier.freq", position.coords.latitude*10);
+      var source_freq_values = this.sinewaver.get('carrier.source.freq.values');
+      this.sinewaver.set("carrier.source.freq.values", source_freq_values);
     }
 
     /*
