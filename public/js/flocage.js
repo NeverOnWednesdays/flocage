@@ -95,12 +95,27 @@ var geoSuccess = function(position) {
   switch(window.BoutonFlocage.getMode()) {
     case modes.DEBUT:
       window.BoutonFlocage.setPositionInitiale(position);
-      frequence_base = int(Math.abs(position.coords.latitude)) * 10 + Math.abs(position.coord.longitude);
+      frequence_base = Math.floor(Math.abs(position.coords.latitude)) * 10 + Math.abs(position.coords.longitude);
       window.BoutonFlocage.modulerFrequence(frequence_base);
       window.BoutonFlocage.setMode(modes.PREMIERE_MODULATION);
       break;
     case modes.PREMIERE_MODULATION:
-      
+      window.BoutonFlocage.ajouterPosition(position);
+      var position_initiale = window.BoutonFlocage.getPositionInitiale();
+      var diff_longitude = Math.abs(position.coords.longitude - position_initiale.coords.longitude);
+      var diff_latitude = Math.abs(position.coords.latitude - position_initiale.coords.latitude);
+      var diff = diff_longitude + diff_latitude;
+      var ratio = diff / 0.0001;
+      window.BoutonFlocage.multiplierFrequence(ratio);
+      window.BoutonFlocage.setMode(modes.MODULATIONS);
+      break;
+    case modes.MODULATIONS:
+      var derniere_position = window.BoutonFlocage.getDernierePosition();
+      var diff_longitude = Math.abs(position.coords.longitude - derniere_position.coords.longitude);
+      var diff_latitude = Math.abs(position.coords.latitude - derniere_position.coords.latitude);
+      var diff = diff_longitude + diff_latitude;
+      var ratio = diff / 0.0001;
+      window.BoutonFlocage.multiplierFrequence(ratio);
       break;
   }
 
@@ -128,7 +143,15 @@ class BoutonFlocage {
         this.position_initiale = null;
         this.positions = [];
         this.mode = modes.DEBUT;
-        this.compteurModulation = 0;
+        this.compteurModulations = 0;
+    }
+
+    ajouterPosition(position) {
+      this.positions.push(position);
+    }
+
+    getDernierePosition() {
+      return this.positions[this.positions.length - 1];
     }
 
     basculer() {
@@ -151,6 +174,10 @@ class BoutonFlocage {
         }
     }
 
+    getMode() {
+      return this.mode;
+    }
+
     setPositionInitiale(position) {
       this.position_initiale = position;
     }
@@ -164,9 +191,17 @@ class BoutonFlocage {
 
     modulerFrequence(nouvelle_frequence) {
       var source_freq_values = this.sinewaver.get('carrier.source.freq.values');
-      source_freq_values[this.compteurModulations] = nouvelle_frequence;
+      source_freq_values[this.compteurModulations++ % source_freq_values.length] = nouvelle_frequence;
       this.sinewaver.set("carrier.source.freq.values", source_freq_values);
-      this.compteurModulations = this.compteurModulations++ % source_freq_values.length;
+    }
+
+    multiplierFrequence(multiplicateur) {
+      var source_freq_values = this.sinewaver.get('carrier.source.freq.values');
+      var frequence_actuelle = source_freq_values[this.compteurModulations];
+      frequence_actuelle = frequence_actuelle * multiplicateur;
+      source_freq_values[this.compteurModulations++ % source_freq_values.length] = frequence_actuelle;
+      this.sinewaver.set("carrier.source.freq.values", source_freq_values);
+
     }
 
 };
