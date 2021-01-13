@@ -3,37 +3,35 @@ fluid.defaults("flocage.sinewaver", {
     gradeNames: ["flock.synth"],
 
     // Define the synthDef for your instrument.
-
-	synthDef:
-	{
-		id: "carrier",
-		ugen: "flock.ugen.filter.moog",
-		cutoff: {
-			ugen: "flock.ugen.sinOsc",
-			freq: 80,
-			mul: 5000,
-			add: 7000
-		},
-		resonance: {
-			ugen: "flock.ugen.sinOsc",
+synthDef: {
+	id: "carrier",
+	ugen: "flock.ugen.filter.moog",
+	cutoff: {
+		ugen: "flock.ugen.sinOsc",
+		freq: 80,
+		mul: 5000,
+		add: 7000
+	},
+	resonance: {
+		ugen: "flock.ugen.sinOsc",
+		freq: 1,
+		mul: 1.5,
+		add: 1.5
+	},
+	source: {
+		ugen: "flock.ugen.lfSaw",
+		freq: {
+			ugen: "flock.ugen.sequence",
 			freq: 1,
-			mul: 1.5,
-			add: 1.5
-		},
-		source: {
-			ugen: "flock.ugen.lfSaw",
-			freq: {
-				ugen: "flock.ugen.sequence",
-				freq: 1,
-				loop: 1,
-				values: [222, 221 * 5/7, 120, 223 * 3/9, 220 * 4/5, 227],
-				options: {
-					interpolation: "linear"
-				}
+			loop: 1,
+			values: [222, 221 * 5/7, 120, 223 * 3/9, 220 * 4/5, 227],
+			options: {
+				interpolation: "linear"
 			}
-		},
-		mul: 0.5
-	}
+		}
+	},
+	mul: 0.5
+}
 });
 
 
