@@ -198,6 +198,12 @@ class BoutonFlocage {
     }
 
     multiplierFrequence(multiplicateur) {
+      if (multiplicateur < 0.5) {
+        multiplicateur = 0.5;
+      }
+      else if (multiplicateur > 2.0) {
+        multiplicateur = 2.0;
+      }
       var source_freq_values = this.sinewaver.get('carrier.source.freq.values');
       var frequence_actuelle = source_freq_values[this.compteurModulations];
       frequence_actuelle = frequence_actuelle * multiplicateur;
