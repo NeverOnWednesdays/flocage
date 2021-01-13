@@ -85,10 +85,8 @@ fluid.defaults("flocage.composition", {
 */
 var geoSuccess = function(position) {
 
-  console.log(position.coords.latitude);
   var latitude_element = document.getElementById('latitude');
   latitude_element.innerHTML = position.coords.latitude.toString();
-  console.log(position.coords.longitude);
   var longitude_element = document.getElementById('longitude');
   longitude_element.innerHTML = position.coords.longitude.toString();
 
@@ -106,6 +104,8 @@ var geoSuccess = function(position) {
       var diff_latitude = Math.abs(position.coords.latitude - position_initiale.coords.latitude);
       var diff = diff_longitude + diff_latitude;
       var ratio = diff / 0.0001;
+      var ratio_element = document.getElementById('ratio');
+      longitude_element.innerHTML = ratio.toString();
       window.BoutonFlocage.multiplierFrequence(ratio);
       window.BoutonFlocage.setMode(modes.MODULATIONS);
       break;
@@ -115,6 +115,8 @@ var geoSuccess = function(position) {
       var diff_latitude = Math.abs(position.coords.latitude - derniere_position.coords.latitude);
       var diff = diff_longitude + diff_latitude;
       var ratio = diff / 0.0001;
+      var ratio_element = document.getElementById('ratio');
+      ratio_element.innerHTML = ratio.toString();
       window.BoutonFlocage.multiplierFrequence(ratio);
       break;
   }
@@ -196,6 +198,12 @@ class BoutonFlocage {
     }
 
     multiplierFrequence(multiplicateur) {
+      if (multiplicateur < 0.5) {
+        multiplicateur = 0.5;
+      }
+      else if (multiplicateur > 2.0) {
+        multiplicateur = 2.0;
+      }
       var source_freq_values = this.sinewaver.get('carrier.source.freq.values');
       var frequence_actuelle = source_freq_values[this.compteurModulations];
       frequence_actuelle = frequence_actuelle * multiplicateur;

@@ -2,6 +2,10 @@ extends layout
 
 block content
   h1= 'Never on Wednesdays'
-  h2(id='latitude') 0.0
-  h2(id='longitude') 0.0
+  h2= 'latitude'
+  h3(id='latitude') 0.0
+  h2= 'longitude'
+  h3(id='longitude') 0.0
+  h2= 'ratio'
+  h3(id='ratio') 0.0
   button(type='button' onclick='window.BoutonFlocage.basculer()') Debuter
