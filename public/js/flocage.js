@@ -3,35 +3,35 @@ fluid.defaults("flocage.sinewaver", {
     gradeNames: ["flock.synth"],
 
     // Define the synthDef for your instrument.
-    synthDef: {
-        id: "carrier",
-        ugen: "flock.ugen.filter.moog",
-        cutoff: {
-            ugen: "flock.ugen.sinOsc",
-            freq: 80,
-            mul: 5000,
-            add: 7000
-        },
-        resonance: {
-            ugen: "flock.ugen.sinOsc",
-            freq: 1,
-            mul: 1.5,
-            add: 1.5
-        },
-        source: {
-            ugen: "flock.ugen.lfSaw",
-            freq: {
-                ugen: "flock.ugen.sequence",
-                freq: 1,
-                loop: 1,
-                values: [222, 221 * 5/7, 120, 223 * 3/9, 220 * 4/5, 227],
-                options: {
-                    interpolation: "linear"
-                }
-            }
-        },
-        mul: 0.5
-    }
+synthDef: {
+	id: "carrier",
+	ugen: "flock.ugen.filter.moog",
+	cutoff: {
+		ugen: "flock.ugen.sinOsc",
+		freq: 80,
+		mul: 5000,
+		add: 7000
+	},
+	resonance: {
+		ugen: "flock.ugen.sinOsc",
+		freq: 1,
+		mul: 1.5,
+		add: 1.5
+	},
+	source: {
+		ugen: "flock.ugen.lfSaw",
+		freq: {
+			ugen: "flock.ugen.sequence",
+			freq: 1,
+			loop: 1,
+			values: [222, 221 * 5/7, 120, 223 * 3/9, 220 * 4/5, 227],
+			options: {
+				interpolation: "linear"
+			}
+		}
+	},
+	mul: 0.5
+}
 });
 
 
@@ -103,6 +103,8 @@ var geoSuccess = function(position) {
       var diff_longitude = Math.abs(position.coords.longitude - position_initiale.coords.longitude);
       var diff_latitude = Math.abs(position.coords.latitude - position_initiale.coords.latitude);
       var diff = diff_longitude + diff_latitude;
+      var abs_sum = Math.abs(position.coords.longitude + position_initiale.coords.latitude)/50;
+      window.BoutonFlocage.modulerFrequenceSequenceur(abs_sum);
       var ratio = diff / 0.0001;
       var ratio_element = document.getElementById('ratio');
       longitude_element.innerHTML = ratio.toString();
@@ -195,6 +197,10 @@ class BoutonFlocage {
       var source_freq_values = this.sinewaver.get('carrier.source.freq.values');
       source_freq_values[this.compteurModulations++ % source_freq_values.length] = nouvelle_frequence;
       this.sinewaver.set("carrier.source.freq.values", source_freq_values);
+    }
+
+    modulerFrequenceSequenceur(nouvelle_frequence) {
+      this.sinewaver.set("carrier.source.freq.freq", nouvelle_frequence);
     }
 
     multiplierFrequence(multiplicateur) {
