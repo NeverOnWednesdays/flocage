@@ -1,7 +1,6 @@
 // Define an Infusion component that represents your instrument.
-fluid.defaults("flocage.sinewaver", {
-    gradeNames: ["flock.synth"],
 
+var sequencer = flock.synth({
     // Define the synthDef for your instrument.
 synthDef: {
 	id: "carrier",
@@ -35,32 +34,6 @@ synthDef: {
 });
 
 
-// Define an Infusion component that represents your composition.
-fluid.defaults("flocage.composition", {
-    gradeNames: ["fluid.component"],
-
-    // This composition has two components:
-    //  1. our sinewaver instrument (defined above)
-    //  2. an instance of the Flocking environment
-    components: {
-        environment: {
-            type: "flock.enviro"
-        },
-
-        instrument: {
-            type: "flocage.sinewaver"
-        }
-    },
-
-    // This section registers listeners for our composition's "onCreate" event,
-    // which is one of the built-in lifecycle events for Infusion.
-    // When onCreate fires, we start the Flocking environment.
-    listeners: {
-        "onCreate.startEnvironment": {
-            func: "{environment}.start"
-        }
-    }
-});
 /*
 1. [Mode Début] Phases par défaut
 
@@ -148,6 +121,7 @@ class BoutonFlocage {
         this.positions = [];
         this.mode = modes.DEBUT;
         this.compteurModulations = 0;
+        this.enviro = null;
     }
 
     ajouterPosition(position) {
@@ -162,10 +136,12 @@ class BoutonFlocage {
         switch (this.status) {
             case "nouveau":
                 //document.body.webkitRequestFullscreen();
-                this.sinewaver = flocage.sinewaver();
+                this.sinewaver = sequencer;
                 this.sinewaver.play();
                 this.status = "joue";
                 navigator.geolocation.watchPosition(geoSuccess, geoError);
+                this.enviro = flock.init();
+                this.enviro.start();
                 break;
             case "joue":
                 this.sinewaver.pause();
