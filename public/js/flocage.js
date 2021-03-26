@@ -1,37 +1,5 @@
-// Define an Infusion component that represents your instrument.
+var mod = 270;
 
-var sequencer = flock.synth({
-    // Define the synthDef for your instrument.
-synthDef: {
-	id: "carrier",
-	ugen: "flock.ugen.filter.moog",
-	cutoff: {
-		ugen: "flock.ugen.sinOsc",
-		freq: 80,
-		mul: 5000,
-		add: 7000
-	},
-	resonance: {
-		ugen: "flock.ugen.sinOsc",
-		freq: 1,
-		mul: 1.5,
-		add: 1.5
-	},
-	source: {
-		ugen: "flock.ugen.lfSaw",
-		freq: {
-			ugen: "flock.ugen.sequence",
-			freq: 1,
-			loop: 1,
-			values: [222, 221 * 5/7, 120, 223 * 3/9, 220 * 4/5, 227],
-			options: {
-				interpolation: "linear"
-			}
-		}
-	},
-	mul: 0.5
-}
-});
 
 
 /*
@@ -115,14 +83,14 @@ class BoutonFlocage {
 
     constructor() {
         this.status = "nouveau";
-        this.sinewaver = null;
+        this.synths = [];
         this.teinte = false;
         this.position_initiale = null;
         this.positions = [];
         this.mode = modes.DEBUT;
         this.compteurModulations = 0;
         this.enviro = null;
-    }
+        this.barfcore = null;    }
 
     ajouterPosition(position) {
       this.positions.push(position);
@@ -135,20 +103,94 @@ class BoutonFlocage {
     basculer() {
         switch (this.status) {
             case "nouveau":
+              console.log("nouveau");
                 //document.body.webkitRequestFullscreen();
-                this.sinewaver = sequencer;
-                this.sinewaver.play();
+              this.barfcore = flock.synth({
+                  synthDef: {
+                    id: "carrier",
+                    ugen: "flock.ugen.filter.moog",
+                    cutoff: {
+                    ugen: "flock.ugen.sinOsc",
+                    freq: 80,
+                    phase: {
+                      id: "mod",
+                      ugen: "flock.ugen.sinOsc",
+                      freq: 34.0,
+                      mul: {
+                          ugen: "flock.ugen.sinOsc",
+                          freq: 1 / mod,
+                          mul: flock.PI
+                      },
+                      add: flock.PI
+                    },
+                    mul: 5000,
+                    add: 7000
+                    },
+                    resonance: {
+                      ugen: "flock.ugen.sinOsc",
+                      freq: 1,
+                      mul: 1.5,
+                      add: 1.5
+                    },
+                    source: {
+                      ugen: "flock.ugen.lfSaw",
+                      freq: {
+                        ugen: "flock.ugen.sequence",
+                        freq: mod / 50,
+                        loop: 1,
+                        values: [mod + 13, 221 * 5/7, mod, (mod + 20) * 3/9, 220 * 4/5, 227, mod, mod * 3],
+                        options: {
+                            interpolation: "linear"
+                        }
+                      }
+                    },
+                    mul: 0.35
+                  },
+                  addToEnvironment: false
+                });
+              this.drone = flock.synth({
+                synthDef: {
+                  id: "carrier",
+                  ugen: "flock.ugen.sinOsc",
+                  freq: mod * 1.5,
+                  phase: {
+                    id: "mod",
+                    ugen: "flock.ugen.sinOsc",
+                    freq: mod * 0.5,
+                    mul: {
+                      ugen: "flock.ugen.sinOsc",
+                      freq: 1 / (mod / 5),
+                      mul: flock.PI
+                    },
+                    add: flock.PI
+                  },
+                  mul: 0.5
+                  },
+                  addToEnvironment: false
+              });
+
+                this.synths = [this.barfcore, this.drone];
                 this.status = "joue";
                 navigator.geolocation.watchPosition(geoSuccess, geoError);
                 this.enviro = flock.init();
                 this.enviro.start();
+                var i;
+                for (i = 0; i < this.synths.length; i++) {
+                  this.synths[i].play();
+                }
                 break;
             case "joue":
-                this.sinewaver.pause();
+                var i;
+                for (i = 0; i < this.synths.length; i++) {
+                  this.synths[i].pause();
+                }
                 this.status = "pause";
                 break;
             case "pause":
-                this.sinewaver.play();
+                var i;
+                for (i = 0; i < this.synths.length; i++) {
+                  this.synths[i].play();
+                }
                 this.status = "joue";
                 break;
         }
@@ -170,13 +212,13 @@ class BoutonFlocage {
     }
 
     modulerFrequence(nouvelle_frequence) {
-      var source_freq_values = this.sinewaver.get('carrier.source.freq.values');
+      var source_freq_values = this.synths[0].get('carrier.source.freq.values');
       source_freq_values[this.compteurModulations++ % source_freq_values.length] = nouvelle_frequence;
-      this.sinewaver.set("carrier.source.freq.values", source_freq_values);
+      this.synths[0].set("carrier.source.freq.values", source_freq_values);
     }
 
     modulerFrequenceSequenceur(nouvelle_frequence) {
-      this.sinewaver.set("carrier.source.freq.freq", nouvelle_frequence);
+      this.synths[0].set("carrier.source.freq.freq", nouvelle_frequence);
     }
 
     multiplierFrequence(multiplicateur) {
@@ -186,11 +228,11 @@ class BoutonFlocage {
       else if (multiplicateur > 2.0) {
         multiplicateur = 2.0;
       }
-      var source_freq_values = this.sinewaver.get('carrier.source.freq.values');
+      var source_freq_values = this.synths[0].get('carrier.source.freq.values');
       var frequence_actuelle = source_freq_values[this.compteurModulations];
       frequence_actuelle = frequence_actuelle * multiplicateur;
       source_freq_values[this.compteurModulations++ % source_freq_values.length] = frequence_actuelle;
-      this.sinewaver.set("carrier.source.freq.values", source_freq_values);
+      this.synths[0].set("carrier.source.freq.values", source_freq_values);
 
     }
 
