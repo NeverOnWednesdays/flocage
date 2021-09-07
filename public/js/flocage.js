@@ -109,7 +109,8 @@ class BoutonFlocage {
                   enable: false
                 }
               });
-              spectro.connectSource()
+              var AudioContext = window.AudioContext;
+              spectro.connectSource(AudioContext);
               console.log("nouveau");
                 //document.body.webkitRequestFullscreen();
               this.barfcore = flock.synth({
