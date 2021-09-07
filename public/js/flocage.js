@@ -1,5 +1,5 @@
-var mod = 270;
 
+var mod = 270;
 
 
 /*
@@ -103,6 +103,13 @@ class BoutonFlocage {
     basculer() {
         switch (this.status) {
             case "nouveau":
+              var canvas = document.getElementById('canvas');
+              var spectro = Spectrogram(canvas, {
+                audio: {
+                  enable: false
+                }
+              });
+              spectro.connectSource()
               console.log("nouveau");
                 //document.body.webkitRequestFullscreen();
               this.barfcore = flock.synth({
