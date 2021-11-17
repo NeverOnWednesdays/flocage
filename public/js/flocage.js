@@ -55,6 +55,14 @@ class BoutonFlocage {
     basculer() {
         switch (this.status) {
             case "nouveau":
+              var canvas = document.getElementById('canvas');
+              var spectro = Spectrogram(canvas, {
+                audio: {
+                  enable: false
+                }
+              });
+              var AudioContext = window.AudioContext;
+              spectro.connectSource(AudioContext);
               console.log("nouveau");
               this.barfcore = flock.synth({
                   synthDef: {
