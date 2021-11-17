@@ -24,54 +24,6 @@ var mod = 270;
 7. On avance le compteur de phase
 
 */
-var geoSuccess = function(position) {
-
-  var latitude_element = document.getElementById('latitude');
-  latitude_element.innerHTML = position.coords.latitude.toString();
-  var longitude_element = document.getElementById('longitude');
-  longitude_element.innerHTML = position.coords.longitude.toString();
-
-  switch(window.BoutonFlocage.getMode()) {
-    case modes.DEBUT:
-      window.BoutonFlocage.setPositionInitiale(position);
-      frequence_base = Math.floor(Math.abs(position.coords.latitude)) * 10 + Math.abs(position.coords.longitude);
-      window.BoutonFlocage.modulerFrequence(frequence_base);
-      window.BoutonFlocage.setMode(modes.PREMIERE_MODULATION);
-      break;
-    case modes.PREMIERE_MODULATION:
-      window.BoutonFlocage.ajouterPosition(position);
-      var position_initiale = window.BoutonFlocage.getPositionInitiale();
-      var diff_longitude = Math.abs(position.coords.longitude - position_initiale.coords.longitude);
-      var diff_latitude = Math.abs(position.coords.latitude - position_initiale.coords.latitude);
-      var diff = diff_longitude + diff_latitude;
-      var abs_sum = Math.abs(position.coords.longitude + position_initiale.coords.latitude)/50;
-      window.BoutonFlocage.modulerFrequenceSequenceur(abs_sum);
-      var ratio = diff / 0.0001;
-      var ratio_element = document.getElementById('ratio');
-      longitude_element.innerHTML = ratio.toString();
-      window.BoutonFlocage.multiplierFrequence(ratio);
-      window.BoutonFlocage.setMode(modes.MODULATIONS);
-      break;
-    case modes.MODULATIONS:
-      var derniere_position = window.BoutonFlocage.getDernierePosition();
-      var diff_longitude = Math.abs(position.coords.longitude - derniere_position.coords.longitude);
-      var diff_latitude = Math.abs(position.coords.latitude - derniere_position.coords.latitude);
-      var diff = diff_longitude + diff_latitude;
-      var ratio = diff / 0.0001;
-      var ratio_element = document.getElementById('ratio');
-      ratio_element.innerHTML = ratio.toString();
-      window.BoutonFlocage.multiplierFrequence(ratio);
-      break;
-  }
-
-};
-var geoError = function(error) {
-  switch(error.code) {
-    case error.TIMEOUT:
-      break;
-  }
-};
-
 const modes = {
     DEBUT: 'debut',
     PREMIERE_MODULATION: 'premier_modulation',
@@ -103,16 +55,7 @@ class BoutonFlocage {
     basculer() {
         switch (this.status) {
             case "nouveau":
-              var canvas = document.getElementById('canvas');
-              var spectro = Spectrogram(canvas, {
-                audio: {
-                  enable: false
-                }
-              });
-              var AudioContext = window.AudioContext;
-              spectro.connectSource(AudioContext);
               console.log("nouveau");
-                //document.body.webkitRequestFullscreen();
               this.barfcore = flock.synth({
                   synthDef: {
                     id: "carrier",
@@ -179,24 +122,20 @@ class BoutonFlocage {
 
                 this.synths = [this.barfcore, this.drone];
                 this.status = "joue";
-                navigator.geolocation.watchPosition(geoSuccess, geoError);
                 this.enviro = flock.init();
                 this.enviro.start();
-                var i;
-                for (i = 0; i < this.synths.length; i++) {
+                for (let i = 0; i < this.synths.length; i++) {
                   this.synths[i].play();
                 }
                 break;
             case "joue":
-                var i;
-                for (i = 0; i < this.synths.length; i++) {
+                for (let i = 0; i < this.synths.length; i++) {
                   this.synths[i].pause();
                 }
                 this.status = "pause";
                 break;
             case "pause":
-                var i;
-                for (i = 0; i < this.synths.length; i++) {
+                for (let i = 0; i < this.synths.length; i++) {
                   this.synths[i].play();
                 }
                 this.status = "joue";
@@ -228,6 +167,43 @@ class BoutonFlocage {
     modulerFrequenceSequenceur(nouvelle_frequence) {
       this.synths[0].set("carrier.source.freq.freq", nouvelle_frequence);
     }
+    
+    moduler_y(event) {
+
+      let y = event.clientY || event.touches[0].clientY;
+      let position_initiale, diff, ratio, ratio_element, frequence_base, derniere_position;
+
+  switch(window.BoutonFlocage.getMode()) {
+    case modes.DEBUT:
+      console.log(modes.DEBUT);
+      window.BoutonFlocage.setPositionInitiale(y);
+      frequence_base = Math.floor(Math.abs(y)) * 10;
+      window.BoutonFlocage.modulerFrequence(y);
+      window.BoutonFlocage.setMode(modes.PREMIERE_MODULATION);
+      break;
+    case modes.PREMIERE_MODULATION:
+      console.log(modes.PREMIERE_MODULATION);
+      window.BoutonFlocage.ajouterPosition(y);
+      position_initiale = window.BoutonFlocage.getPositionInitiale();
+      diff = Math.abs(y - position_initiale);
+      ratio = diff / 0.0001;
+      ratio_element = document.getElementById('ratio');
+      ratio_element.innerHTML = ratio.toString();
+      window.BoutonFlocage.multiplierFrequence(ratio);
+      window.BoutonFlocage.setMode(modes.MODULATIONS);
+      break;
+    case modes.MODULATIONS:
+      console.log(modes.MODULATIONS);
+      derniere_position = window.BoutonFlocage.getDernierePosition();
+      diff = Math.abs(y - derniere_position);
+      ratio = diff / 0.0001;
+      ratio_element = document.getElementById('ratio');
+      ratio_element.innerHTML = ratio.toString();
+      window.BoutonFlocage.multiplierFrequence(ratio);
+      break;
+  }
+
+}
 
     multiplierFrequence(multiplicateur) {
       if (multiplicateur < 0.5) {
