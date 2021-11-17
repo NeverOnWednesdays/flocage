@@ -1,0 +1,3 @@
+[submodule "public/js/spectrogram"]
+	path = public/js/spectrogram
+	url = https://github.com/miguelmota/spectrogram
