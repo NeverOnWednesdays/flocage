@@ -19,9 +19,9 @@ app.set('port', port);
 /**
  * Create HTTP server.
  */
-const privateKey = fs.readFileSync('/home/hervefc/flocage/certs/privkey.pem', 'utf8');
-const certificate = fs.readFileSync('/home/hervefc/flocage/certs/cert.pem', 'utf8');
-const ca = fs.readFileSync('/home/hervefc/flocage/certs/chain.pem', 'utf8');
+const privateKey = fs.readFileSync(process.env.PRIVATE_KEY || 'certs/privkey.pem', 'utf8');
+const certificate = fs.readFileSync(process.env.CERT || 'certs/cert.pem', 'utf8');
+const ca = fs.readFileSync(process.env.CHAIN || 'certs/chain.pem', 'utf8');
 
 const credentials = {
 		key: privateKey,
