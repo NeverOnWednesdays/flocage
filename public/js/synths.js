@@ -9,36 +9,36 @@ let barfcore = flock.synth({
       phase: {
         id: "mod",
         ugen: "flock.ugen.sinOsc",
-        freq: 34.0,
+        freq: 34,
         mul: {
             ugen: "flock.ugen.sinOsc",
-            freq: 1 / mod,
-            mul: flock.PI
+            freq: 1,
+            mul: Math.floor(flock.PI)
         },
-        add: flock.PI
+        add: 3
       },
-      mul: 5000,
-      add: 7000
+      mul: 500,
+      add: 700
       },
       resonance: {
         ugen: "flock.ugen.sinOsc",
         freq: 1,
-        mul: 1.5,
-        add: 1.5
+        mul: 1,
+        add: 1
       },
       source: {
         ugen: "flock.ugen.lfSaw",
         freq: {
           ugen: "flock.ugen.sequence",
-          freq: mod / 50,
+          freq: Math.floor(mod / 50),
           loop: 1,
-          values: [mod + 13, 221 * 5/7, mod, (mod + 20) * 3/9, 220 * 4/5, 227, mod, mod * 3],
+          values: [Math.floor(mod + 13), Math.floor(221 * 5/7), Math.floor(mod), Math.floor((mod + 20) * 3/9), Math.floor(220 * 4/5), Math.floor(227), Math.floor(mod), Math.floor(mod * 3)],
           options: {
               interpolation: "linear"
           }
         }
       },
-      mul: 0.35
+      mul: 1
     },
     addToEnvironment: false
   });
@@ -46,19 +46,7 @@ let drone = flock.synth({
   synthDef: {
     id: "carrier",
     ugen: "flock.ugen.sinOsc",
-    freq: mod * 1.5,
-    phase: {
-      id: "mod",
-      ugen: "flock.ugen.sinOsc",
-      freq: mod * 0.5,
-      mul: {
-        ugen: "flock.ugen.sinOsc",
-        freq: 1 / (mod / 5),
-        mul: flock.PI
-      },
-      add: flock.PI
-    },
-    mul: 0.5
+    freq: 500
     },
     addToEnvironment: false
 });

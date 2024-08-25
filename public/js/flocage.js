@@ -52,9 +52,8 @@ class BoutonFlocage {
         switch (this.status) {
             case "nouveau":
               var canvas = document.getElementById('canvas');
-              console.log("nouveau");
 
-                this.synths = [barfcore, drone];
+                this.synths = [drone];
                 this.status = "joue";
                 this.enviro = flock.init();
                 this.enviro.start();
@@ -94,6 +93,7 @@ class BoutonFlocage {
 
     modulerFrequence(nouvelle_frequence) {
       var source_freq_values = this.synths[0].get('carrier.source.freq.values');
+      console.log(source_freq_values);
       source_freq_values[this.compteurModulations++ % source_freq_values.length] = nouvelle_frequence;
       this.synths[0].set("carrier.source.freq.values", source_freq_values);
     }
@@ -109,14 +109,12 @@ class BoutonFlocage {
 
   switch(window.BoutonFlocage.getMode()) {
     case modes.DEBUT:
-      console.log(modes.DEBUT);
       window.BoutonFlocage.setPositionInitiale(y);
       frequence_base = Math.floor(Math.abs(y)) * 10;
       window.BoutonFlocage.modulerFrequence(y);
       window.BoutonFlocage.setMode(modes.PREMIERE_MODULATION);
       break;
     case modes.PREMIERE_MODULATION:
-      console.log(modes.PREMIERE_MODULATION);
       window.BoutonFlocage.ajouterPosition(y);
       position_initiale = window.BoutonFlocage.getPositionInitiale();
       diff = Math.abs(y - position_initiale);
@@ -127,7 +125,6 @@ class BoutonFlocage {
       window.BoutonFlocage.setMode(modes.MODULATIONS);
       break;
     case modes.MODULATIONS:
-      console.log(modes.MODULATIONS);
       derniere_position = window.BoutonFlocage.getDernierePosition();
       diff = Math.abs(y - derniere_position);
       ratio = diff / 0.0001;
@@ -147,6 +144,7 @@ class BoutonFlocage {
         multiplicateur = 2.0;
       }
       var source_freq_values = this.synths[0].get('carrier.source.freq.values');
+      console.log(source_freq_values);
       var frequence_actuelle = source_freq_values[this.compteurModulations];
       frequence_actuelle = frequence_actuelle * multiplicateur;
       source_freq_values[this.compteurModulations++ % source_freq_values.length] = frequence_actuelle;
